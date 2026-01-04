@@ -4,13 +4,15 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+After adding dependencies in pubsec.yaml:
+flutter pub get
 
-A few resources to get you started if this is your first Flutter project:
+When chanchin the schem from the database file:
+flutter pub run build_runner build  (deprecated)
+--> (better) dart run build_runner build --delete-conflicting-outputs
+or
+1 flutter pub get
+2 dart run build_runner build
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+put sqlite3.wasm and drift_worker.js into your web/ folder so the browser knows how to handle the database ( drift_dev: ^2.22.0):
+dart run drift_dev download-wasm

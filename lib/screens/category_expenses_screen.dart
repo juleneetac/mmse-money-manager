@@ -5,7 +5,6 @@ import '../models/expense_with_category.dart';
 /// Screen that shows all expenses of a category for a specific day
 class CategoryExpensesScreen extends StatelessWidget {
   final Category category;
-
   final DateTime date;
 
   const CategoryExpensesScreen({
@@ -20,12 +19,22 @@ class CategoryExpensesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        // Show category name in the app bar
-        title: Text(category.name),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              category.name,
+              style: const TextStyle(fontSize: 18),
+            ),
+            Text(
+              date.toLocal().toString().split(' ')[0],
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ),
       ),
 
       body: StreamBuilder<List<ExpenseWithCategory>>(
-        // Reuse same stream, filtered later by category
         stream: db.watchExpensesForDay(date),
 
         builder: (context, snapshot) {
@@ -33,7 +42,7 @@ class CategoryExpensesScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          // Keep only expenses that belong to this category
+          // Filter expenses for this category
           final expenses = snapshot.data!
               .where((e) => e.category.id == category.id)
               .toList();
@@ -42,20 +51,46 @@ class CategoryExpensesScreen extends StatelessWidget {
             return const Center(child: Text('No expenses'));
           }
 
-          // List of expenses with amount + description
-          return ListView.builder(
+          return ListView.separated(
+            padding: const EdgeInsets.all(12),
+
             itemCount: expenses.length,
+
+            // Subtle separator between items
+            separatorBuilder: (_, __) => const SizedBox(height: 8),
+
             itemBuilder: (context, index) {
               final expense = expenses[index].expense;
 
-              return ListTile(
-                // Expense amount
-                title: Text('€${expense.amount.toStringAsFixed(2)}'),
+              return Card(
+                elevation: 1,
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
 
-                // Optional description
-                subtitle: expense.description != null
-                    ? Text(expense.description!)
-                    : const Text('No description'),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Amount (main focus)
+                      Text(
+                        '€${expense.amount.toStringAsFixed(2)}',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+
+                      const SizedBox(height: 6),
+
+                      // Description or fallback
+                      Text(
+                        expense.description?.isNotEmpty == true
+                            ? expense.description!
+                            : 'No description',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           );

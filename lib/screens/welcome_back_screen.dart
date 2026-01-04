@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'dart:async';
 import '../services/preferences_service.dart';
-import '../services/category_service.dart';
-import '../database/app_database.dart';
 
 // Screen shown when user already exists
 class WelcomeScreen extends StatefulWidget {
@@ -15,15 +13,11 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   String userName = '';
-  late final CategoryService categoryService;
 
   @override
   void initState() {
     super.initState();
     loadUser();
-    final db = AppDatabase();
-    categoryService = CategoryService(db);
-    categoryService.insertDefaultCategories();
 
     // Automatically navigate after 3 seconds
     Timer(const Duration(seconds: 3), () {
