@@ -3,8 +3,6 @@ import 'dart:async';
 
 import 'home_screen.dart';
 import '../services/preferences_service.dart';
-import '../services/category_service.dart';
-import '../database/app_database.dart';
 
 // Screen shown when user already exists
 class WelcomeScreen extends StatefulWidget {
@@ -16,16 +14,11 @@ class WelcomeScreen extends StatefulWidget {
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
   String userName = '';
-  late final CategoryService categoryService;
 
   @override
   void initState() {
     super.initState();
     loadUser();
-
-    final db = AppDatabase();
-    categoryService = CategoryService(db);
-    categoryService.insertDefaultCategories();
 
     // 🔁 Navegación ORIGINAL a HomeScreen (como lo tenías tú)
     Timer(const Duration(seconds: 3), () {

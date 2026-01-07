@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../database/app_database.dart';
 import '../services/expense_service.dart';
 import '../services/category_service.dart';
+import '../services/preferences_service.dart';
 
 /// Screen used to add a new expense
 class AddExpenseScreen extends StatefulWidget {
@@ -30,8 +31,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   void initState() {
     super.initState();
     final db = AppDatabase(); // singleton access
+    final prefs = PreferencesService();
     expenseService = ExpenseService(db);
-    categoryService = CategoryService(db);
+    categoryService = CategoryService(db, prefs);
     _loadCategories();
   }
 

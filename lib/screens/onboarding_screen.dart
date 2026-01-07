@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../services/preferences_service.dart';
 import 'welcome_back_screen.dart';
+import '../services/category_service.dart';
+import '../database/app_database.dart';
 
 // Screen shown ONLY the first time the app is opened
 class OnboardingScreen extends StatelessWidget {
@@ -35,7 +37,11 @@ class OnboardingScreen extends StatelessWidget {
               onPressed: () async {
                 // Save name only if it is not empty
                 if (controller.text.isNotEmpty) {
-                  await PreferencesService().saveUserName(controller.text);
+                  final db = AppDatabase();
+                  final prefs = PreferencesService();
+                  final categoryService = CategoryService(db, prefs);
+                  await prefs.saveUserName(controller.text);
+                  await categoryService.insertDefaultCategoriesIfNeeded();
 
                   // Replace screen and go to welcome screen
                   if (context.mounted) {

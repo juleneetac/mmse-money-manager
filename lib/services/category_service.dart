@@ -1,17 +1,18 @@
 import '../database/app_database.dart';
+import '../services/preferences_service.dart';
 
 /// Service responsible for category-related logic
 class CategoryService {
   final AppDatabase db;
+  final PreferencesService prefs;
 
-  CategoryService(this.db);
+  CategoryService(this.db, this.prefs);
 
-  /// Insert default categories if database is empty
-  Future<void> insertDefaultCategories() async {
-    final existing = await db.getAllCategories();
+  /// Insert default categories in database ONLY ONCE
+  Future<void> insertDefaultCategoriesIfNeeded() async {
+    final alreadyInserted = await prefs.areDefaultCategoriesInserted();
 
-    // Do nothing if categories already exist
-    if (existing.isNotEmpty) return;
+    if (alreadyInserted) return;
 
     await db.batch((batch) {
       batch.insertAll(db.categories, [
@@ -22,6 +23,7 @@ class CategoryService {
         CategoriesCompanion.insert(name: 'Clothes'),
       ]);
     });
+    await prefs.markDefaultCategoriesInserted();
   }
 
   /// Get all categories
