@@ -5,7 +5,6 @@ import '../widgets/category_summary_list.dart';
 import '../widgets/month_total.dart';
 import 'add_expense_screen.dart';
 import 'profile_screen.dart';
-import 'dashboard_screen.dart';
 
 /// Main screen of the application
 class HomeScreen extends StatefulWidget {
@@ -32,19 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Money Manager'),
 
         actions: [
-          // 🔹 Botón Dashboard
-          IconButton(
-            icon: const Icon(Icons.dashboard),
-            tooltip: 'Dashboard',
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const DashboardScreen()),
-              );
-            },
-          ),
-
-          // 🔹 Botón Perfil (el que ya tenías)
+          // profile button
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {

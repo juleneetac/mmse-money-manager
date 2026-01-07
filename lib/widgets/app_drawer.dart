@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../screens/charts_screen.dart';
+import '../screens/dashboard_screen.dart';
 import '../screens/categories_screen.dart';
 import '../screens/splitwise_screen.dart';
 
@@ -12,19 +12,15 @@ class AppDrawer extends StatelessWidget {
     return Drawer(
       child: ListView(
         children: [
-          const DrawerHeader(
-            child: Text('Menu'),
-          ),
+          const DrawerHeader(child: Text('Menu')),
 
           // Charts screen
           ListTile(
-            title: const Text('Charts'),
+            title: const Text('Dashboard'),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const ChartsScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const DashboardScreen()),
               );
             },
           ),
@@ -35,9 +31,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const CategoriesScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const CategoriesScreen()),
               );
             },
           ),
@@ -48,9 +42,7 @@ class AppDrawer extends StatelessWidget {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const SplitwiseScreen(),
-                ),
+                MaterialPageRoute(builder: (_) => const SplitwiseScreen()),
               );
             },
           ),
