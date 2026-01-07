@@ -35,6 +35,8 @@ dependencies:
     sdk: flutter
   flutter:
     sdk: flutter
+  rxdart: ^0.27.7
+  fl_chart: ^1.1.1
   drift: ^2.20.0
   drift_flutter: ^0.2.0
   path: ^1.9.0

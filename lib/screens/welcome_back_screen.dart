@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
 import 'dart:async';
+
+import 'home_screen.dart';
 import '../services/preferences_service.dart';
 
 // Screen shown when user already exists
@@ -19,8 +20,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     super.initState();
     loadUser();
 
-    // Automatically navigate after 3 seconds
+    // 🔁 Navegación ORIGINAL a HomeScreen (como lo tenías tú)
     Timer(const Duration(seconds: 3), () {
+      if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -46,4 +49,3 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 }
-

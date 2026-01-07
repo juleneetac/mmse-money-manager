@@ -6,10 +6,7 @@ import '../database/app_database.dart';
 class MonthTotal extends StatelessWidget {
   final DateTime focusedDay;
 
-  const MonthTotal({
-    super.key,
-    required this.focusedDay,
-  });
+  const MonthTotal({super.key, required this.focusedDay});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +31,7 @@ class MonthTotal extends StatelessWidget {
               children: [
                 // Month label (smaller)
                 Text(
-                  '$monthLabel total:',
+                  '$monthLabel total test:',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
 
@@ -42,8 +39,8 @@ class MonthTotal extends StatelessWidget {
                 Text(
                   '€${total.toStringAsFixed(2)}',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ],
             ),
