@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
 import 'dart:async';
+
+import 'home_screen.dart';
 import '../services/preferences_service.dart';
 import '../services/category_service.dart';
 import '../database/app_database.dart';
@@ -21,12 +22,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   void initState() {
     super.initState();
     loadUser();
+
     final db = AppDatabase();
     categoryService = CategoryService(db);
     categoryService.insertDefaultCategories();
 
-    // Automatically navigate after 3 seconds
+    // 🔁 Navegación ORIGINAL a HomeScreen (como lo tenías tú)
     Timer(const Duration(seconds: 3), () {
+      if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const HomeScreen()),
@@ -52,4 +56,3 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 }
-
