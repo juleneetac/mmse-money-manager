@@ -8,4 +8,7 @@ class Categories extends Table {
 
   // Category name (Food, Travel, Party, etc.)
   TextColumn get name => text()();
+
+  // Category color (stored as ARGB int)
+  IntColumn get color => integer()();
 }

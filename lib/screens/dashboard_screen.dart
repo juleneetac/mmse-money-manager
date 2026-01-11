@@ -86,11 +86,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     );
                   }
 
-                  final Map<String, double> categoryTotals = {};
+                  //final Map<String, double> categoryTotals = {};
+                  final Map<Category, double> categoryTotals = {};
+
+                  // for (final item in snapshot.data!) {
+                  //   final category = item.category.name;
+                  //   final amount = item.expense.amount;
+                  //   categoryTotals[category] =
+                  //       (categoryTotals[category] ?? 0) + amount;
+                  // }
 
                   for (final item in snapshot.data!) {
-                    final category = item.category.name;
+                    final category = item.category;
                     final amount = item.expense.amount;
+
                     categoryTotals[category] =
                         (categoryTotals[category] ?? 0) + amount;
                   }
@@ -126,51 +135,78 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final result = await showDialog<DateTime>(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Select month'),
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              DropdownButton<int>(
-                value: tempYear,
-                items: List.generate(10, (i) {
-                  final year = DateTime.now().year - i;
-                  return DropdownMenuItem(
-                    value: year,
-                    child: Text(year.toString()),
-                  );
-                }),
-                onChanged: (value) {
-                  if (value != null) tempYear = value;
-                },
+        // Use StatefulBuilder so the dropdowns update visually when clicked
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: const Text('Select Month & Year'),
+              content: SizedBox(
+                width: 300, // Give the dialog a fixed width for stability
+                child: Row(
+                  children: [
+                    // Year Dropdown
+                    Expanded(
+                      child: DropdownButtonFormField<int>(
+                        decoration: const InputDecoration(labelText: 'Year'),
+                        value: tempYear,
+                        items: List.generate(10, (i) {
+                          final year = DateTime.now().year - i;
+                          return DropdownMenuItem(
+                            value: year,
+                            child: Text(year.toString()),
+                          );
+                        }),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() => tempYear = value);
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    // Month Dropdown
+                    Expanded(
+                      child: DropdownButtonFormField<int>(
+                        decoration: const InputDecoration(labelText: 'Month'),
+                        value: tempMonth,
+                        items: List.generate(12, (i) {
+                          final month = i + 1;
+                          // Use a valid year (2000) to format the name safely
+                          final monthName = DateFormat.MMMM().format(
+                            DateTime(2000, month),
+                          );
+                          return DropdownMenuItem(
+                            value: month,
+                            child: Text(
+                              monthName,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          );
+                        }),
+                        onChanged: (value) {
+                          if (value != null) {
+                            setDialogState(() => tempMonth = value);
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              DropdownButton<int>(
-                value: tempMonth,
-                items: List.generate(12, (i) {
-                  final month = i + 1;
-                  return DropdownMenuItem(
-                    value: month,
-                    child: Text(DateFormat.MMMM().format(DateTime(0, month))),
-                  );
-                }),
-                onChanged: (value) {
-                  if (value != null) tempMonth = value;
-                },
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context, DateTime(tempYear, tempMonth));
-              },
-              child: const Text('OK'),
-            ),
-          ],
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context, DateTime(tempYear, tempMonth));
+                  },
+                  child: const Text('OK'),
+                ),
+              ],
+            );
+          },
         );
       },
     );
@@ -181,6 +217,68 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
     }
   }
+  // Future<void> _openMonthYearPicker() async {
+  //   int tempYear = selectedMonth.year;
+  //   int tempMonth = selectedMonth.month;
+
+  //   final result = await showDialog<DateTime>(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text('Select month'),
+  //         content: Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: [
+  //             DropdownButton<int>(
+  //               value: tempYear,
+  //               items: List.generate(10, (i) {
+  //                 final year = DateTime.now().year - i;
+  //                 return DropdownMenuItem(
+  //                   value: year,
+  //                   child: Text(year.toString()),
+  //                 );
+  //               }),
+  //               onChanged: (value) {
+  //                 if (value != null) tempYear = value;
+  //               },
+  //             ),
+  //             DropdownButton<int>(
+  //               value: tempMonth,
+  //               items: List.generate(12, (i) {
+  //                 final month = i + 1;
+  //                 return DropdownMenuItem(
+  //                   value: month,
+  //                   child: Text(DateFormat.MMMM().format(DateTime(0, month))),
+  //                 );
+  //               }),
+  //               onChanged: (value) {
+  //                 if (value != null) tempMonth = value;
+  //               },
+  //             ),
+  //           ],
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.pop(context),
+  //             child: const Text('Cancel'),
+  //           ),
+  //           ElevatedButton(
+  //             onPressed: () {
+  //               Navigator.pop(context, DateTime(tempYear, tempMonth));
+  //             },
+  //             child: const Text('OK'),
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+
+  //   if (result != null) {
+  //     setState(() {
+  //       selectedMonth = result;
+  //     });
+  //   }
+  // }
 
   // Expenses for selected month
   Stream<List<ExpenseWithCategory>> _watchExpensesForMonth(
@@ -238,19 +336,10 @@ class _SummaryCard extends StatelessWidget {
 }
 
 class _CategoryPieChart extends StatelessWidget {
-  final Map<String, double> data;
+  // Map<Category, totalAmount>
+  final Map<Category, double> data;
 
   const _CategoryPieChart({required this.data});
-
-  // 🎨 Fixed colors per category
-  static const Map<String, Color> categoryColors = {
-    'Food': Colors.orange,
-    'Travel': Colors.blue,
-    'Party': Colors.purple,
-    'Shopping': Colors.green,
-    'Bills': Colors.red,
-    'Health': Colors.teal,
-  };
 
   @override
   Widget build(BuildContext context) {
@@ -258,13 +347,14 @@ class _CategoryPieChart extends StatelessWidget {
       PieChartData(
         centerSpaceRadius: 40,
         sections: data.entries.map((entry) {
-          final color = categoryColors[entry.key] ?? Colors.grey;
+          final category = entry.key;
+          final total = entry.value;
 
           return PieChartSectionData(
-            value: entry.value,
-            title: entry.key,
+            value: total,
+            title: category.name,
             radius: 70,
-            color: color,
+            color: Color(category.color), // ✅ DB color
             titleStyle: const TextStyle(
               color: Colors.white,
               fontSize: 11,

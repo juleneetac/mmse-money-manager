@@ -22,7 +22,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase._internal() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   // Insert a new expense (normalized without hours, only days) into database
   Future<void> insertExpense(ExpensesCompanion expense) {
@@ -34,6 +34,19 @@ class AppDatabase extends _$AppDatabase {
   // Get all categories
   Future<List<Category>> getAllCategories() {
     return select(categories).get();
+  }
+
+  // Insert a new category into database
+  Future<int> insertCategory(CategoriesCompanion category) {
+    return into(categories).insert(category);
+  }
+
+  // Check if a category exist in the database
+  Future<bool> rawCategoryExists(String name) async {
+    final result = await (select(
+      categories,
+    )..where((c) => c.name.equals(name))).get();
+    return result.isNotEmpty;
   }
 
   // Get expenses for a specific day with category info
@@ -81,7 +94,7 @@ class AppDatabase extends _$AppDatabase {
 
     final data = {
       'categories': allCategories.map((c) {
-        return {'id': c.id, 'name': c.name};
+        return {'id': c.id, 'name': c.name, 'color': c.color};
       }).toList(),
       'expenses': allExpenses.map((e) {
         return {
@@ -115,9 +128,9 @@ class AppDatabase extends _$AppDatabase {
       for (final c in categoriesJson) {
         final oldId = c['id'] as int;
 
-        final newId = await into(
-          categories,
-        ).insert(CategoriesCompanion.insert(name: c['name']));
+        final newId = await into(categories).insert(
+          CategoriesCompanion.insert(name: c['name'], color: c['color'] as int),
+        );
 
         categoryIdMap[oldId] = newId;
       }
