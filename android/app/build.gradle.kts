@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.myapp"
     compileSdk = flutter.compileSdkVersion
-    buildToolsVersion = flutter.buildToolsVersion
+    //buildToolsVersion = flutter.buildToolsVersion
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
