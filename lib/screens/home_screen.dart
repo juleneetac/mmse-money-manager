@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../widgets/app_drawer.dart';
 import '../widgets/month_calendar.dart';
-import '../widgets/category_summary_list.dart';
 import '../widgets/month_total.dart';
+import '../widgets/day_expense_detail_sheet.dart';
+
 import 'add_expense_screen.dart';
 import 'profile_screen.dart';
 
@@ -15,6 +17,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // 🔑 KEY to access MonthCalendarState
+  final GlobalKey<MonthCalendarState> _calendarKey =
+      GlobalKey<MonthCalendarState>();
+
   // Current month shown in calendar
   DateTime _focusedDay = DateTime.now();
 
@@ -46,15 +52,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Button to add a new expense
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           if (_selectedDay == null) return;
 
-          Navigator.push(
+          // Open Add Expense screen
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => AddExpenseScreen(selectedDate: _selectedDay!),
             ),
           );
+
+          // 🔴 FORCE calendar refresh after adding expense
+          _calendarKey.currentState?.refreshMonth();
         },
         child: const Icon(Icons.add),
       ),
@@ -66,6 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           // Monthly calendar widget
           MonthCalendar(
+            key: _calendarKey,
             focusedDay: _focusedDay,
             selectedDay: _selectedDay,
             onDaySelected: (day) {
@@ -73,11 +84,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 _selectedDay = day;
                 _focusedDay = day;
               });
+
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (_) => SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.75,
+                  child: DayExpenseDetailSheet(day: day),
+                ),
+              );
             },
           ),
-
-          // List of expenses for selected day
-          Expanded(child: CategorySummaryList(selectedDay: _selectedDay)),
         ],
       ),
     );
