@@ -17,6 +17,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  // 🔑 KEY to access MonthCalendarState
+  final GlobalKey<MonthCalendarState> _calendarKey =
+      GlobalKey<MonthCalendarState>();
+
   // Current month shown in calendar
   DateTime _focusedDay = DateTime.now();
 
@@ -26,13 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Left drawer menu
       drawer: const AppDrawer(),
 
       appBar: AppBar(
         title: const Text('Money Manager'),
         actions: [
-          // Profile button
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
@@ -45,28 +47,31 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-      // Button to add a new expense
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           if (_selectedDay == null) return;
 
-          Navigator.push(
+          // Open Add Expense screen
+          await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => AddExpenseScreen(selectedDate: _selectedDay!),
+              builder: (_) =>
+                  AddExpenseScreen(selectedDate: _selectedDay!),
             ),
           );
+
+          // 🔴 FORCE calendar refresh after adding expense
+          _calendarKey.currentState?.refreshMonth();
         },
         child: const Icon(Icons.add),
       ),
 
       body: Column(
         children: [
-          // Monthly total widget
           MonthTotal(focusedDay: _focusedDay),
 
-          // Monthly calendar widget
           MonthCalendar(
+            key: _calendarKey,
             focusedDay: _focusedDay,
             selectedDay: _selectedDay,
             onDaySelected: (day) {
@@ -75,16 +80,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 _focusedDay = day;
               });
 
-              // 🔽 OPEN DAY EXPENSE DETAIL SHEET
               showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
-                builder: (_) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.75,
-                    child: DayExpenseDetailSheet(day: day),
-                  );
-                },
+                builder: (_) => SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.75,
+                  child: DayExpenseDetailSheet(day: day),
+                ),
               );
             },
           ),
