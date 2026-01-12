@@ -89,13 +89,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   //final Map<String, double> categoryTotals = {};
                   final Map<Category, double> categoryTotals = {};
 
-                  // for (final item in snapshot.data!) {
-                  //   final category = item.category.name;
-                  //   final amount = item.expense.amount;
-                  //   categoryTotals[category] =
-                  //       (categoryTotals[category] ?? 0) + amount;
-                  // }
-
                   for (final item in snapshot.data!) {
                     final category = item.category;
                     final amount = item.expense.amount;
@@ -217,68 +210,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       });
     }
   }
-  // Future<void> _openMonthYearPicker() async {
-  //   int tempYear = selectedMonth.year;
-  //   int tempMonth = selectedMonth.month;
-
-  //   final result = await showDialog<DateTime>(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text('Select month'),
-  //         content: Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             DropdownButton<int>(
-  //               value: tempYear,
-  //               items: List.generate(10, (i) {
-  //                 final year = DateTime.now().year - i;
-  //                 return DropdownMenuItem(
-  //                   value: year,
-  //                   child: Text(year.toString()),
-  //                 );
-  //               }),
-  //               onChanged: (value) {
-  //                 if (value != null) tempYear = value;
-  //               },
-  //             ),
-  //             DropdownButton<int>(
-  //               value: tempMonth,
-  //               items: List.generate(12, (i) {
-  //                 final month = i + 1;
-  //                 return DropdownMenuItem(
-  //                   value: month,
-  //                   child: Text(DateFormat.MMMM().format(DateTime(0, month))),
-  //                 );
-  //               }),
-  //               onChanged: (value) {
-  //                 if (value != null) tempMonth = value;
-  //               },
-  //             ),
-  //           ],
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.pop(context),
-  //             child: const Text('Cancel'),
-  //           ),
-  //           ElevatedButton(
-  //             onPressed: () {
-  //               Navigator.pop(context, DateTime(tempYear, tempMonth));
-  //             },
-  //             child: const Text('OK'),
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-
-  //   if (result != null) {
-  //     setState(() {
-  //       selectedMonth = result;
-  //     });
-  //   }
-  // }
 
   // Expenses for selected month
   Stream<List<ExpenseWithCategory>> _watchExpensesForMonth(

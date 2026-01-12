@@ -15,50 +15,6 @@ class BackupService {
 
   BackupService(this._db);
 
-  /// Export all data to a JSON file and share it
-  // Future<void> exportData() async {
-  //   // // Get JSON from database
-  //   // final json = await _db.exportToJson();
-
-  //   // // Create backup file
-  //   // // Android public Downloads folder
-  //   // final directory = Directory('/storage/emulated/0/Download');
-
-  //   // if (!await directory.exists()) {
-  //   //   throw Exception('Downloads folder not found');
-  //   // }
-
-  //   // final file = File('${directory.path}/money_manager_backup.json');
-
-  //   // // Write JSON to file
-  //   // await file.writeAsString(json);
-
-  //   // // Share the file
-  //   // // await Share.shareXFiles([XFile(file.path)]);
-
-  //   try {
-  //     // 1. Get JSON from database
-  //     final String jsonString = await _db.exportToJson();
-  //     final Uint8List bytes = utf8.encode(jsonString);
-
-  //     // Save the file using FileSaver
-  //     // This explicitly tells the OS it's a JSON file
-  //     String filePath = await FileSaver.instance.saveFile(
-  //       name: 'money_manager_backup', // Name without extension
-  //       bytes: bytes,
-  //       ext: 'json',
-  //       mimeType: MimeType.json,
-  //     );
-  //     print("Your file is located at: $filePath");
-
-  //     if (filePath.isNotEmpty) {
-  //       print('Backup saved successfully: $filePath');
-  //     }
-  //   } catch (e) {
-  //     print('Export failed: $e');
-  //   }
-  // }
-
   Future<void> exportData(BuildContext context) async {
   try {
     // 1. Prepare your data
