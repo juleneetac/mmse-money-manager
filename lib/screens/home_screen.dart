@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+
 import '../widgets/app_drawer.dart';
 import '../widgets/month_calendar.dart';
-import '../widgets/category_summary_list.dart';
 import '../widgets/month_total.dart';
+import '../widgets/day_expense_detail_sheet.dart';
+
 import 'add_expense_screen.dart';
 import 'profile_screen.dart';
 
@@ -29,9 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       appBar: AppBar(
         title: const Text('Money Manager'),
-
         actions: [
-          // profile button
+          // Profile button
           IconButton(
             icon: const Icon(Icons.person),
             onPressed: () {
@@ -73,11 +74,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 _selectedDay = day;
                 _focusedDay = day;
               });
+
+              // 🔽 OPEN DAY EXPENSE DETAIL SHEET
+              showModalBottomSheet(
+                context: context,
+                isScrollControlled: true,
+                builder: (_) {
+                  return SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.75,
+                    child: DayExpenseDetailSheet(day: day),
+                  );
+                },
+              );
             },
           ),
-
-          // List of expenses for selected day
-          Expanded(child: CategorySummaryList(selectedDay: _selectedDay)),
         ],
       ),
     );
