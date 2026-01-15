@@ -9,12 +9,14 @@ class MonthCalendar extends StatefulWidget {
   final DateTime focusedDay;
   final DateTime? selectedDay;
   final ValueChanged<DateTime> onDaySelected;
+  final ValueChanged<DateTime>? onPageChanged;
 
   const MonthCalendar({
     super.key,
     required this.focusedDay,
     required this.selectedDay,
     required this.onDaySelected,
+    this.onPageChanged,
   });
 
   @override
@@ -83,11 +85,26 @@ class MonthCalendarState extends State<MonthCalendar> {
 
     final intensity = (amount / maxDailyAmount).clamp(0.0, 1.0);
 
-    return Color.lerp(Colors.red.shade100, Colors.red.shade900, intensity);
+    //return Color.lerp(Colors.red.shade100, Colors.red.shade900, intensity);
+    // Using the modern withValues for smooth intensity
+    return const Color.fromARGB(
+      255,
+      249,
+      23,
+      6,
+    ).withValues(alpha: intensity.clamp(0.2, 1.0));
   }
 
   Widget _buildDay(DateTime day, {bool isSelected = false}) {
     final color = _getDayColor(day);
+    final bool isToday = isSameDay(day, DateTime.now());
+
+    // Decide the background color
+    // Priority: Heatmap Color > Gray for Today > Transparent
+    Color? backgroundColor = color;
+    if (backgroundColor == null && isToday) {
+      backgroundColor = Colors.grey.withValues(alpha: 0.6); // Light gray circle
+    }
 
     return Center(
       child: Container(
@@ -95,15 +112,22 @@ class MonthCalendarState extends State<MonthCalendar> {
         height: 36,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: color,
-          border: isSelected ? Border.all(color: Colors.blue, width: 2) : null,
+          color: backgroundColor,
+          border: isSelected
+              ? Border.all(color: Colors.blue, width: 2) // Selected blue border
+              : (isToday && color != null)
+              ? Border.all(
+                  color: Colors.grey,
+                  width: 2,
+                ) // Gray border if today has expenses
+              : null,
         ),
         alignment: Alignment.center,
         child: Text(
           '${day.day}',
           style: TextStyle(
-            fontWeight: FontWeight.w600,
-            color: color == null ? Colors.black : Colors.white,
+            fontWeight: isToday ? FontWeight.bold : FontWeight.w600,
+            color: backgroundColor == null ? Colors.black : Colors.white,
           ),
         ),
       ),
@@ -132,18 +156,12 @@ class MonthCalendarState extends State<MonthCalendar> {
       onPageChanged: (focusedDay) {
         _focusedDay = focusedDay;
         _loadMonthData(focusedDay);
+        if (widget.onPageChanged != null) {
+          widget.onPageChanged!(focusedDay);
+        }
       },
       // Calendar style
-      calendarStyle: const CalendarStyle(
-        todayDecoration: BoxDecoration(
-          color: Colors.blueGrey,
-          shape: BoxShape.circle,
-        ),
-        selectedDecoration: BoxDecoration(
-          color: Colors.blue,
-          shape: BoxShape.circle,
-        ),
-      ),
+      calendarStyle: const CalendarStyle(),
       headerStyle: const HeaderStyle(
         formatButtonVisible: false,
         titleCentered: true,

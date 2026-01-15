@@ -101,12 +101,20 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
             DropdownButtonFormField<int>(
               initialValue: selectedCategoryId,
               decoration: const InputDecoration(labelText: 'Category'),
-              items: categories.map((category) {
-                return DropdownMenuItem<int>(
-                  value: category.id,
-                  child: Text(category.name),
-                );
-              }).toList(),
+              items:
+                  //show the list of categories sorted
+                  (List.of(categories)..sort(
+                        (a, b) => a.name.toLowerCase().compareTo(
+                          b.name.toLowerCase(),
+                        ),
+                      ))
+                      .map((category) {
+                        return DropdownMenuItem<int>(
+                          value: category.id,
+                          child: Text(category.name),
+                        );
+                      })
+                      .toList(),
               onChanged: (value) {
                 setState(() => selectedCategoryId = value);
               },

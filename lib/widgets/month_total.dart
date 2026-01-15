@@ -31,7 +31,7 @@ class MonthTotal extends StatelessWidget {
               children: [
                 // Month label (smaller)
                 Text(
-                  '$monthLabel total test:',
+                  '$monthLabel total:',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
 

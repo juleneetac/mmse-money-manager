@@ -141,7 +141,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Expanded(
                       child: DropdownButtonFormField<int>(
                         decoration: const InputDecoration(labelText: 'Year'),
-                        value: tempYear,
+                        initialValue: tempYear,
                         items: List.generate(10, (i) {
                           final year = DateTime.now().year - i;
                           return DropdownMenuItem(
@@ -161,7 +161,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     Expanded(
                       child: DropdownButtonFormField<int>(
                         decoration: const InputDecoration(labelText: 'Month'),
-                        value: tempMonth,
+                        initialValue: tempMonth,
                         items: List.generate(12, (i) {
                           final month = i + 1;
                           // Use a valid year (2000) to format the name safely

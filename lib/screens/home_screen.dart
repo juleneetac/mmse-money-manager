@@ -5,7 +5,6 @@ import '../widgets/month_calendar.dart';
 import '../widgets/month_total.dart';
 import '../widgets/day_expense_detail_sheet.dart';
 
-import 'add_expense_screen.dart';
 import 'profile_screen.dart';
 
 /// Main screen of the application
@@ -50,25 +49,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
 
-      // Button to add a new expense
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (_selectedDay == null) return;
-
-          // Open Add Expense screen
-          await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => AddExpenseScreen(selectedDate: _selectedDay!),
-            ),
-          );
-
-          // 🔴 FORCE calendar refresh after adding expense
-          _calendarKey.currentState?.refreshMonth();
-        },
-        child: const Icon(Icons.add),
-      ),
-
       body: Column(
         children: [
           // Monthly total widget
@@ -79,13 +59,12 @@ class _HomeScreenState extends State<HomeScreen> {
             key: _calendarKey,
             focusedDay: _focusedDay,
             selectedDay: _selectedDay,
-            onDaySelected: (day) {
+            onDaySelected: (day) async {
               setState(() {
                 _selectedDay = day;
                 _focusedDay = day;
               });
-
-              showModalBottomSheet(
+              await showModalBottomSheet(
                 context: context,
                 isScrollControlled: true,
                 builder: (_) => SizedBox(
@@ -93,6 +72,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: DayExpenseDetailSheet(day: day),
                 ),
               );
+
+              //This runs AFTER the sheet is closed
+              _calendarKey.currentState?.refreshMonth();
+            },
+            onPageChanged: (newFocusedDay) {
+              setState(() {
+                _focusedDay = newFocusedDay;
+              });
             },
           ),
         ],
