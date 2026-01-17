@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:drift/drift.dart' as drift;
 import 'package:intl/intl.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../database/app_database.dart';
-import '../models/expense_with_category.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -55,11 +52,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
             StreamBuilder<double>(
               stream: db.watchTotalForMonth(selectedMonth),
               builder: (context, snapshot) {
-                final total = snapshot.data ?? 0.0;
-
                 return _SummaryCard(
                   title: 'Total expenses this month',
-                  value: total,
+                  value: snapshot.data ?? 0.0,
                   color: Colors.red,
                 );
               },
@@ -77,8 +72,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
             // Pie chart with category colors
             SizedBox(
               height: 220,
-              child: StreamBuilder<List<ExpenseWithCategory>>(
-                stream: _watchExpensesForMonth(startOfMonth, endOfMonth),
+              child: StreamBuilder<Map<Category, double>>(
+                stream: db.watchCategoryTotalsForMonth(
+                  startOfMonth,
+                  endOfMonth,
+                ),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(
@@ -86,18 +84,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     );
                   }
 
-                  //final Map<String, double> categoryTotals = {};
-                  final Map<Category, double> categoryTotals = {};
-
-                  for (final item in snapshot.data!) {
-                    final category = item.category;
-                    final amount = item.expense.amount;
-
-                    categoryTotals[category] =
-                        (categoryTotals[category] ?? 0) + amount;
-                  }
-
-                  return _CategoryPieChart(data: categoryTotals);
+                  return _CategoryPieChart(data: snapshot.data!);
                 },
               ),
             ),
@@ -112,7 +99,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 12),
 
             Expanded(
-              child: _YearlyBarChart(db: db, year: selectedMonth.year),
+              child: _YearlyBarChart(
+                db: db,
+                year: selectedMonth.year,
+              ),
             ),
           ],
         ),
@@ -133,58 +123,44 @@ class _DashboardScreenState extends State<DashboardScreen> {
           builder: (context, setDialogState) {
             return AlertDialog(
               title: const Text('Select Month & Year'),
-              content: SizedBox(
-                width: 300, // Give the dialog a fixed width for stability
-                child: Row(
-                  children: [
+              content: Row(
+                children: [
                     // Year Dropdown
-                    Expanded(
-                      child: DropdownButtonFormField<int>(
+                  Expanded(
+                    child: DropdownButtonFormField<int>(
                         decoration: const InputDecoration(labelText: 'Year'),
                         initialValue: tempYear,
-                        items: List.generate(10, (i) {
-                          final year = DateTime.now().year - i;
-                          return DropdownMenuItem(
-                            value: year,
-                            child: Text(year.toString()),
-                          );
-                        }),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setDialogState(() => tempYear = value);
-                          }
-                        },
-                      ),
+                      items: List.generate(10, (i) {
+                        final year = DateTime.now().year - i;
+                        return DropdownMenuItem(
+                          value: year,
+                          child: Text(year.toString()),
+                        );
+                      }),
+                      onChanged: (v) =>
+                          setDialogState(() => tempYear = v!),
                     ),
-                    const SizedBox(width: 16),
+                  ),
+                  const SizedBox(width: 16),
                     // Month Dropdown
-                    Expanded(
-                      child: DropdownButtonFormField<int>(
+                  Expanded(
+                    child: DropdownButtonFormField<int>(
                         decoration: const InputDecoration(labelText: 'Month'),
                         initialValue: tempMonth,
-                        items: List.generate(12, (i) {
-                          final month = i + 1;
-                          // Use a valid year (2000) to format the name safely
-                          final monthName = DateFormat.MMMM().format(
-                            DateTime(2000, month),
-                          );
-                          return DropdownMenuItem(
-                            value: month,
-                            child: Text(
-                              monthName,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          );
-                        }),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setDialogState(() => tempMonth = value);
-                          }
-                        },
-                      ),
+                      items: List.generate(12, (i) {
+                        final m = i + 1;
+                        return DropdownMenuItem(
+                          value: m,
+                          child: Text(
+                            DateFormat.MMMM().format(DateTime(2000, m)),
+                          ),
+                        );
+                      }),
+                      onChanged: (v) =>
+                          setDialogState(() => tempMonth = v!),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               actions: [
                 TextButton(
@@ -192,9 +168,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context, DateTime(tempYear, tempMonth));
-                  },
+                  onPressed: () =>
+                      Navigator.pop(context, DateTime(tempYear, tempMonth)),
                   child: const Text('OK'),
                 ),
               ],
@@ -205,37 +180,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
 
     if (result != null) {
-      setState(() {
-        selectedMonth = result;
-      });
+      setState(() => selectedMonth = result);
     }
-  }
-
-  // Expenses for selected month
-  Stream<List<ExpenseWithCategory>> _watchExpensesForMonth(
-    DateTime start,
-    DateTime end,
-  ) {
-    final query = db.select(db.expenses).join([
-      drift.innerJoin(
-        db.categories,
-        db.categories.id.equalsExp(db.expenses.categoryId),
-      ),
-    ])..where(db.expenses.date.isBetweenValues(start, end));
-
-    return query.watch().map((rows) {
-      return rows.map((row) {
-        final expense = row.readTable(db.expenses);
-        final category = row.readTable(db.categories);
-        return ExpenseWithCategory(expense: expense, category: category);
-      }).toList();
-    });
   }
 }
 
-//////////////////////////////////////////////////////////
+// =======================
 // Widgets
-//////////////////////////////////////////////////////////
+// =======================
 
 class _SummaryCard extends StatelessWidget {
   final String title;
@@ -277,15 +229,12 @@ class _CategoryPieChart extends StatelessWidget {
     return PieChart(
       PieChartData(
         centerSpaceRadius: 40,
-        sections: data.entries.map((entry) {
-          final category = entry.key;
-          final total = entry.value;
-
+        sections: data.entries.map((e) {
           return PieChartSectionData(
-            value: total,
-            title: category.name,
+            value: e.value,
+            title: e.key.name,
             radius: 70,
-            color: Color(category.color), // ✅ DB color
+            color: Color(e.key.color),
             titleStyle: const TextStyle(
               color: Colors.white,
               fontSize: 11,
@@ -305,29 +254,14 @@ class _YearlyBarChart extends StatelessWidget {
   const _YearlyBarChart({required this.db, required this.year});
 
   static const List<String> monthInitials = [
-    'J',
-    'F',
-    'M',
-    'A',
-    'M',
-    'J',
-    'J',
-    'A',
-    'S',
-    'O',
-    'N',
-    'D',
+    'J', 'F', 'M', 'A', 'M', 'J',
+    'J', 'A', 'S', 'O', 'N', 'D',
   ];
 
   @override
   Widget build(BuildContext context) {
-    final months = List.generate(12, (i) => DateTime(year, i + 1));
-
     return StreamBuilder<List<double>>(
-      stream: Rx.combineLatest<double, List<double>>(
-        months.map((m) => db.watchTotalForMonth(m)),
-        (values) => values,
-      ),
+      stream: db.watchYearlyTotals(year),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Center(child: CircularProgressIndicator());
@@ -354,29 +288,22 @@ class _YearlyBarChart extends StatelessWidget {
             }),
 
             titlesData: FlTitlesData(
-              leftTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              rightTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              topTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
+              leftTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
-                  interval: 1,
-                  getTitlesWidget: (value, meta) {
-                    final index = value.toInt();
-                    if (index < 0 || index > 11) {
-                      return const SizedBox.shrink();
-                    }
-
+                  getTitlesWidget: (value, _) {
+                    final i = value.toInt();
+                    if (i < 0 || i > 11) return const SizedBox.shrink();
                     return Padding(
                       padding: const EdgeInsets.only(top: 8),
                       child: Text(
-                        monthInitials[index],
+                        monthInitials[i],
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.bold,
