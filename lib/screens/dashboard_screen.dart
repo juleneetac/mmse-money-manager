@@ -99,10 +99,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             const SizedBox(height: 12),
 
             Expanded(
-              child: _YearlyBarChart(
-                db: db,
-                year: selectedMonth.year,
-              ),
+              child: _YearlyBarChart(db: db, year: selectedMonth.year),
             ),
           ],
         ),
@@ -125,11 +122,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               title: const Text('Select Month & Year'),
               content: Row(
                 children: [
-                    // Year Dropdown
+                  // Year Dropdown
                   Expanded(
                     child: DropdownButtonFormField<int>(
-                        decoration: const InputDecoration(labelText: 'Year'),
-                        initialValue: tempYear,
+                      decoration: const InputDecoration(labelText: 'Year'),
+                      initialValue: tempYear,
                       items: List.generate(10, (i) {
                         final year = DateTime.now().year - i;
                         return DropdownMenuItem(
@@ -137,16 +134,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           child: Text(year.toString()),
                         );
                       }),
-                      onChanged: (v) =>
-                          setDialogState(() => tempYear = v!),
+                      onChanged: (v) => setDialogState(() => tempYear = v!),
                     ),
                   ),
                   const SizedBox(width: 16),
-                    // Month Dropdown
+                  // Month Dropdown
                   Expanded(
                     child: DropdownButtonFormField<int>(
-                        decoration: const InputDecoration(labelText: 'Month'),
-                        initialValue: tempMonth,
+                      decoration: const InputDecoration(labelText: 'Month'),
+                      initialValue: tempMonth,
                       items: List.generate(12, (i) {
                         final m = i + 1;
                         return DropdownMenuItem(
@@ -156,8 +152,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           ),
                         );
                       }),
-                      onChanged: (v) =>
-                          setDialogState(() => tempMonth = v!),
+                      onChanged: (v) => setDialogState(() => tempMonth = v!),
                     ),
                   ),
                 ],
@@ -254,8 +249,18 @@ class _YearlyBarChart extends StatelessWidget {
   const _YearlyBarChart({required this.db, required this.year});
 
   static const List<String> monthInitials = [
-    'J', 'F', 'M', 'A', 'M', 'J',
-    'J', 'A', 'S', 'O', 'N', 'D',
+    'J',
+    'F',
+    'M',
+    'A',
+    'M',
+    'J',
+    'J',
+    'A',
+    'S',
+    'O',
+    'N',
+    'D',
   ];
 
   @override
@@ -288,12 +293,15 @@ class _YearlyBarChart extends StatelessWidget {
             }),
 
             titlesData: FlTitlesData(
-              leftTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles:
-                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              leftTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              rightTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              topTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,

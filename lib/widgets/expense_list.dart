@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import '../database/app_database.dart';
 import '../models/expense_with_category.dart';
 
+// NOT USED !!!!!  CAN BE DELETED 
 /// Shows expenses for a selected day, grouped by category
 class ExpenseList extends StatelessWidget {
   final DateTime? selectedDay;
 
-  const ExpenseList({
-    super.key,
-    required this.selectedDay,
-  });
+  const ExpenseList({super.key, required this.selectedDay});
 
   @override
   Widget build(BuildContext context) {
@@ -84,9 +82,7 @@ class ExpenseList extends StatelessWidget {
                       return ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          '€${e.expense.amount.toStringAsFixed(2)}',
-                        ),
+                        title: Text('€${e.expense.amount.toStringAsFixed(2)}'),
                         subtitle: e.expense.description != null
                             ? Text(e.expense.description!)
                             : null,

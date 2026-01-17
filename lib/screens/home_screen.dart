@@ -16,7 +16,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // 🔑 KEY to access MonthCalendarState
+  // KEY to access MonthCalendarState
   final GlobalKey<MonthCalendarState> _calendarKey =
       GlobalKey<MonthCalendarState>();
 

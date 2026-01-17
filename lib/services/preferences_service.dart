@@ -31,6 +31,7 @@ class PreferencesService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(_defaultCategoriesInsertedKey) ?? false;
   }
+
   // Mark default categories as inserted
   Future<void> markDefaultCategoriesInserted() async {
     final prefs = await SharedPreferences.getInstance();

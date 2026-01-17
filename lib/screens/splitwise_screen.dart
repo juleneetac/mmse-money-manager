@@ -7,9 +7,7 @@ class SplitwiseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Splitwise'),
-      ),
+      appBar: AppBar(title: const Text('Splitwise')),
       body: const Center(
         child: Text(
           'Hello World from Splitwise Screen',

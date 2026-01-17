@@ -7,17 +7,12 @@ import '../screens/category_expenses_screen.dart';
 class CategorySummaryList extends StatelessWidget {
   final DateTime? selectedDay;
 
-  const CategorySummaryList({
-    super.key,
-    required this.selectedDay,
-  });
+  const CategorySummaryList({super.key, required this.selectedDay});
 
   @override
   Widget build(BuildContext context) {
     if (selectedDay == null) {
-      return const Center(
-        child: Text('Select a day to see expenses'),
-      );
+      return const Center(child: Text('Select a day to see expenses'));
     }
 
     final db = AppDatabase();
@@ -71,8 +66,10 @@ class CategorySummaryList extends StatelessWidget {
                   );
                 },
                 child: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

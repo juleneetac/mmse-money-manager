@@ -6,7 +6,6 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
-
 import 'tables/expenses.dart';
 import 'tables/categories.dart';
 import '../models/expense_with_category.dart';
@@ -88,7 +87,7 @@ class AppDatabase extends _$AppDatabase {
       (rows) => rows.fold<double>(0, (sum, e) => sum + e.amount),
     );
   }
-// =========================
+  // =========================
   // DASHBOARD HELPERS
   // =========================
 
@@ -189,6 +188,16 @@ class AppDatabase extends _$AppDatabase {
         );
       }
     });
+  }
+
+  // Update an existing expense
+  Future<bool> updateExpense(ExpensesCompanion expense) {
+    return update(expenses).replace(expense);
+  }
+
+  // Delete an expense by ID
+  Future<int> deleteExpense(int expenseId) {
+    return (delete(expenses)..where((e) => e.id.equals(expenseId))).go();
   }
 }
 

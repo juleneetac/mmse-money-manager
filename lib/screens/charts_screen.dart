@@ -7,9 +7,7 @@ class ChartsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Charts'),
-      ),
+      appBar: AppBar(title: const Text('Charts')),
       body: const Center(
         child: Text(
           'Hello World from Charts Screen',

@@ -23,4 +23,28 @@ class ExpenseService {
       ),
     );
   }
+
+
+  /// Update an existing expense
+  Future<void> updateExpense(Expense expense, {
+    required double amount,
+    String? description,
+    required int categoryId,
+    required DateTime date,
+  }) async {
+    await db.updateExpense(
+      ExpensesCompanion(
+        id: Value(expense.id), //Pass the ID to identify the row
+        amount: Value(amount),
+        description: Value(description),
+        date: Value(date),
+        categoryId: Value(categoryId),
+      ),
+    );
+  }
+
+  /// Delete an expense
+  Future<void> deleteExpense(int id) async {
+    await db.deleteExpense(id);
+  }
 }
