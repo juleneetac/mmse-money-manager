@@ -4,6 +4,8 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'package:rxdart/rxdart.dart';
+
 
 import 'tables/expenses.dart';
 import 'tables/categories.dart';
@@ -86,6 +88,45 @@ class AppDatabase extends _$AppDatabase {
       (rows) => rows.fold<double>(0, (sum, e) => sum + e.amount),
     );
   }
+// =========================
+  // DASHBOARD HELPERS
+  // =========================
+
+  /// Total per category for a given month
+  Stream<Map<Category, double>> watchCategoryTotalsForMonth(
+    DateTime start,
+    DateTime end,
+  ) {
+    final query = select(expenses).join([
+      innerJoin(categories, categories.id.equalsExp(expenses.categoryId)),
+    ])..where(expenses.date.isBetweenValues(start, end));
+
+    return query.watch().map((rows) {
+      final Map<Category, double> totals = {};
+
+      for (final row in rows) {
+        final expense = row.readTable(expenses);
+        final category = row.readTable(categories);
+        totals[category] = (totals[category] ?? 0) + expense.amount;
+      }
+
+      return totals;
+    });
+  }
+
+  /// Monthly totals for a full year (Jan–Dec)
+  Stream<List<double>> watchYearlyTotals(int year) {
+    final months = List.generate(12, (i) => DateTime(year, i + 1));
+
+    return Rx.combineLatest<double, List<double>>(
+      months.map((m) => watchTotalForMonth(m)),
+      (values) => values,
+    );
+  }
+
+  // =========================
+  // EXPORT / IMPORT
+  // =========================
 
   // Export all categories and expenses to a JSON string
   Future<String> exportToJson() async {
