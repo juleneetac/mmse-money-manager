@@ -115,7 +115,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final result = await showDialog<DateTime>(
       context: context,
       builder: (context) {
-        // Use StatefulBuilder so the dropdowns update visually when clicked
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../screens/dashboard_screen.dart';
 import '../screens/categories_screen.dart';
-import '../screens/splitwise_screen.dart';
 
 // Left side navigation drawer
 class AppDrawer extends StatelessWidget {
@@ -16,9 +15,7 @@ class AppDrawer extends StatelessWidget {
       child: SafeArea(
         child: Column(
           children: [
-            // =====================
             // HEADER (TITLE + USER)
-            // =====================
             DrawerHeader(
               margin: EdgeInsets.zero,
               child: Column(
@@ -61,18 +58,6 @@ class AppDrawer extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (_) => const CategoriesScreen()),
-                );
-              },
-            ),
-
-            // Splitwise
-            ListTile(
-              title: const Text('Splitwise'),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SplitwiseScreen()),
                 );
               },
             ),

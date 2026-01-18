@@ -4,6 +4,7 @@ import '../models/expense_with_category.dart';
 import '../screens/category_expenses_screen.dart';
 import '../screens/add_expense_screen.dart';
 
+/// Widget that shows total expenses per category for a selected day
 class DayExpenseDetailSheet extends StatelessWidget {
   final DateTime day;
 
@@ -26,13 +27,13 @@ class DayExpenseDetailSheet extends StatelessWidget {
 
         final expenses = snapshot.data!;
 
-        // 2. Calculate the Total for the whole day
+        // Calculate the Total for the whole day
         final dailyTotal = expenses.fold<double>(
           0,
           (sum, item) => sum + item.expense.amount,
         );
 
-        // Group expenses by category (Your existing logic)
+        // Group expenses by category
         final Map<int, List<ExpenseWithCategory>> grouped = {};
         for (final e in expenses) {
           grouped.putIfAbsent(e.category.id, () => []).add(e);
@@ -42,13 +43,13 @@ class DayExpenseDetailSheet extends StatelessWidget {
           appBar: AppBar(
             title: Row(
               children: [
-                // The Date
+                // Date
                 Text(
                   '${day.day}/${day.month}/${day.year}',
                   style: const TextStyle(fontSize: 18),
                 ),
                 const Spacer(),
-                // The Beautiful Total Chip
+                // Beautiful Total Chip
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,

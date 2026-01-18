@@ -13,14 +13,13 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  String userName = '';
+  String _userName = '';
 
   @override
   void initState() {
     super.initState();
     loadUser();
 
-    // 🔁 Navegación ORIGINAL a HomeScreen (como lo tenías tú)
     Timer(const Duration(seconds: 3), () {
       if (!mounted) return;
 
@@ -33,7 +32,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   // Load user name from storage
   void loadUser() async {
-    userName = await PreferencesService().getUserName();
+    _userName = await PreferencesService().getUserName();
     setState(() {});
   }
 
@@ -42,7 +41,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     return Scaffold(
       body: Center(
         child: Text(
-          'Welcome again $userName',
+          'Welcome again $_userName',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),

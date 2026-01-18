@@ -13,7 +13,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  String userName = '';
+  String _userName = '';
 
   @override
   void initState() {
@@ -24,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Future<void> _loadUserName() async {
     final name = await PreferencesService().getUserName();
     if (!mounted) return;
-    setState(() => userName = name);
+    setState(() => _userName = name);
   }
 
   @override
@@ -35,19 +35,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
       body: Column(
-        crossAxisAlignment:
-            CrossAxisAlignment.start, // Aligns children to the left
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Top section: User info
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Text(
-              'User: $userName',
+              'User: $_userName',
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
 
-          // This Expanded takes up all remaining space, pushing buttons down
           const Expanded(child: SizedBox()),
 
           // Bottom Buttons Area

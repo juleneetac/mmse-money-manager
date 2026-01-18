@@ -53,12 +53,11 @@ class _EditExpenseScreenState extends State<EditExpenseScreen> {
   }
 
   Future<void> _updateExpense() async {
-    // 2. Validate form before processing
+    // Validate form before processing
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
-    // Now we can safely parse because the validator checked it
     final amount = double.parse(amountController.text);
 
     await expenseService.updateExpense(

@@ -107,7 +107,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       context: context,
       builder: (context) {
         // Allows state updates inside the dialog (color selection)
-        // 1. Wrap with StatefulBuilder so the UI refreshes inside the dialog
+        // Wrap with StatefulBuilder so the UI refreshes inside the dialog
         return StatefulBuilder(
           builder: (context, setDialogState) {
             return AlertDialog(
@@ -133,7 +133,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    // 2. The "Simple Beauty" Grid
                     SizedBox(
                       width: double.maxFinite,
                       child: Wrap(

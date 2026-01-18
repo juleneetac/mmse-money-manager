@@ -36,9 +36,9 @@ class CategoryExpensesScreen extends StatelessWidget {
       body: StreamBuilder<List<ExpenseWithCategory>>(
         stream: db.watchExpensesForDay(date),
         builder: (context, snapshot) {
-          if (!snapshot.hasData)
+          if (!snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
-
+          }
           final expenses = snapshot.data!
               .where((e) => e.category.id == category.id)
               .toList();

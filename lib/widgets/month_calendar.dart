@@ -23,7 +23,6 @@ class MonthCalendar extends StatefulWidget {
   MonthCalendarState createState() => MonthCalendarState();
 }
 
-// ✅ STATE PÚBLICO (SIN _)
 class MonthCalendarState extends State<MonthCalendar> {
   final AppDatabase db = AppDatabase();
 

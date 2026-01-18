@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import '../services/preferences_service.dart';
+
 import 'welcome_back_screen.dart';
+
+import '../services/preferences_service.dart';
 import '../services/category_service.dart';
 import '../database/app_database.dart';
 

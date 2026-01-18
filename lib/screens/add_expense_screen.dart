@@ -100,15 +100,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   labelText: 'Amount (€)',
                   prefixIcon: Icon(Icons.euro),
                 ),
-                validator:
-                    AppValidators.validateAmount, // 👈 Using the validator
+                validator: AppValidators.validateAmount,
               ),
 
               const SizedBox(height: 16),
 
               // Category Dropdown with Validator
               DropdownButtonFormField<int>(
-                initialValue : selectedCategoryId,
+                initialValue: selectedCategoryId,
                 decoration: const InputDecoration(labelText: 'Category'),
                 items: categories
                     .map(
@@ -147,105 +146,4 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       ),
     );
   }
-  // /// Validate inputs and save expense
-  // Future<void> _saveExpense() async {
-  //   final amount = double.tryParse(amountController.text);
-  //   final normalizedDate = DateTime(
-  //     widget.selectedDate.year,
-  //     widget.selectedDate.month,
-  //     widget.selectedDate.day,
-  //   );
-
-  //   // Basic validation
-  //   if (amount == null || amount <= 0 || selectedCategoryId == null) {
-  //     return;
-  //   }
-
-  //   await expenseService.saveExpense(
-  //     amount: amount,
-  //     description: descriptionController.text.isEmpty
-  //         ? null
-  //         : descriptionController.text,
-  //     categoryId: selectedCategoryId!,
-  //     date: normalizedDate,
-  //   );
-
-  //   // Close screen after saving
-  //   if (mounted) {
-  //     Navigator.pop(context);
-  //   }
-  // }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     appBar: AppBar(title: const Text('Add Expense')),
-  //     body: Padding(
-  //       padding: const EdgeInsets.all(16),
-  //       child: Column(
-  //         children: [
-  //           // Amount input
-  //           TextField(
-  //             controller: amountController,
-  //             keyboardType: TextInputType.number,
-  //             decoration: const InputDecoration(labelText: 'Amount (€)'),
-  //           ),
-
-  //           const SizedBox(height: 12),
-
-  //           // Category dropdown
-  //           DropdownButtonFormField<int>(
-  //             initialValue: selectedCategoryId,
-  //             decoration: const InputDecoration(labelText: 'Category'),
-  //             items:
-  //                 //show the list of categories sorted
-  //                 (List.of(categories)..sort(
-  //                       (a, b) => a.name.toLowerCase().compareTo(
-  //                         b.name.toLowerCase(),
-  //                       ),
-  //                     ))
-  //                     .map((category) {
-  //                       return DropdownMenuItem<int>(
-  //                         value: category.id,
-  //                         child: Text(category.name),
-  //                       );
-  //                     })
-  //                     .toList(),
-  //             onChanged: (value) {
-  //               setState(() => selectedCategoryId = value);
-  //             },
-  //           ),
-
-  //           const SizedBox(height: 12),
-
-  //           // Optional description
-  //           TextField(
-  //             controller: descriptionController,
-  //             decoration: const InputDecoration(
-  //               labelText: 'Description (optional)',
-  //             ),
-  //           ),
-
-  //           const SizedBox(height: 12),
-
-  //           Text(
-  //             'Date: ${widget.selectedDate.toLocal().toString().split(' ')[0]}',
-  //             style: const TextStyle(fontSize: 16),
-  //           ),
-
-  //           const Spacer(),
-
-  //           // Save expense button
-  //           SizedBox(
-  //             width: double.infinity,
-  //             child: ElevatedButton(
-  //               onPressed: _saveExpense,
-  //               child: const Text('Save Expense'),
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 }

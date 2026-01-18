@@ -16,12 +16,12 @@ class BackupService {
 
   Future<void> exportData(BuildContext context) async {
     try {
-      // 1. Prepare your data
+      // Prepare the data
       final String jsonString = await _db.exportToJson();
       final Uint8List bytes = utf8.encode(jsonString);
 
-      // 2. Use saveFile - This opens the System UI
-      // The user can choose 'Downloads' here.
+      // Use saveFile - This opens the System UI
+      // The user can choose 'Downloads' here
       final String? filePath = await FilePicker.platform.saveFile(
         dialogTitle: 'Select where to save your backup',
         fileName: 'money_manager_backup.json',
