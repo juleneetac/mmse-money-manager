@@ -5,6 +5,8 @@ import '../widgets/month_calendar.dart';
 import '../widgets/month_total.dart';
 import '../widgets/day_expense_detail_sheet.dart';
 
+import '../services/preferences_service.dart'; 
+
 import 'profile_screen.dart';
 
 /// Main screen of the application
@@ -26,11 +28,28 @@ class _HomeScreenState extends State<HomeScreen> {
   // Selected day by the user
   DateTime? _selectedDay;
 
+  // username loaded from PreferencesService
+  String _userName = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName(); // 
+  }
+
+  //  load username
+  Future<void> _loadUserName() async {
+    final name = await PreferencesService().getUserName();
+    setState(() {
+      _userName = name;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       // Left drawer menu
-      drawer: const AppDrawer(),
+      drawer: AppDrawer(userName: _userName), 
 
       appBar: AppBar(
         title: const Text('Money Manager'),
@@ -73,7 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               );
 
-              //This runs AFTER the sheet is closed
+              // This runs AFTER the sheet is closed
               _calendarKey.currentState?.refreshMonth();
             },
             onPageChanged: (newFocusedDay) {
