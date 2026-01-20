@@ -48,6 +48,7 @@ dependencies:
   share_plus: ^10.0.0
   file_saver: ^0.2.10
   intl: ^0.20.2
+  flutter_launcher_icons: ^0.14.4
 
 
 dev_dependencies:
@@ -101,3 +102,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "assets/images/moneymanager_icon.png" # Path to your icon file
+  min_sdk_android: 21
+  # Optional: For Android "Adaptive Icons"
+  adaptive_icon_background: "#4CAF50" # This is your green color (hex code)
+  adaptive_icon_foreground: "assets/images/moneymanager_icon.png"
