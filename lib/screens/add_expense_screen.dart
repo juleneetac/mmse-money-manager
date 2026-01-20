@@ -83,64 +83,64 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Add Expense')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        // 2. Wrap everything in a Form
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              // Amount Input with Validator
-              TextFormField(
-                controller: amountController,
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
+      // SafeArea prevents the nav bar overlap
+      body: SafeArea(
+        // SingleChildScrollView prevents keyboard crash
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: amountController,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  decoration: const InputDecoration(
+                    labelText: 'Amount (€)',
+                    prefixIcon: Icon(Icons.euro),
+                  ),
+                  validator: AppValidators.validateAmount,
                 ),
-                decoration: const InputDecoration(
-                  labelText: 'Amount (€)',
-                  prefixIcon: Icon(Icons.euro),
+
+                const SizedBox(height: 16),
+
+                DropdownButtonFormField<int>(
+                  initialValue: selectedCategoryId,
+                  decoration: const InputDecoration(labelText: 'Category'),
+                  items: categories
+                      .map(
+                        (cat) => DropdownMenuItem(
+                          value: cat.id,
+                          child: Text(cat.name),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (val) => setState(() => selectedCategoryId = val),
+                  validator: AppValidators.validateCategory,
                 ),
-                validator: AppValidators.validateAmount,
-              ),
 
-              const SizedBox(height: 16),
+                const SizedBox(height: 16),
 
-              // Category Dropdown with Validator
-              DropdownButtonFormField<int>(
-                initialValue: selectedCategoryId,
-                decoration: const InputDecoration(labelText: 'Category'),
-                items: categories
-                    .map(
-                      (cat) => DropdownMenuItem(
-                        value: cat.id,
-                        child: Text(cat.name),
-                      ),
-                    )
-                    .toList(),
-                onChanged: (val) => setState(() => selectedCategoryId = val),
-                validator:
-                    AppValidators.validateCategory, // Using the validator
-              ),
-
-              const SizedBox(height: 16),
-
-              TextFormField(
-                controller: descriptionController,
-                decoration: const InputDecoration(
-                  labelText: 'Description (optional)',
+                TextFormField(
+                  controller: descriptionController,
+                  decoration: const InputDecoration(
+                    labelText: 'Description (optional)',
+                  ),
                 ),
-              ),
 
-              const Spacer(),
+                const SizedBox(height: 32),
 
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _saveExpense,
-                  child: const Text('Save Expense'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saveExpense,
+                    child: const Text('Save Expense'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

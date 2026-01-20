@@ -34,58 +34,63 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Profile')),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top section: User info
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Text(
-              'User: $_userName',
-              style: Theme.of(context).textTheme.titleLarge,
+      // Wrap the entire body in SafeArea
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Top section: User info
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                'User: $_userName',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
-          ),
 
-          const Expanded(child: SizedBox()),
+            const Spacer(),
 
-          // Bottom Buttons Area
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment:
-                  CrossAxisAlignment.start, // Keep buttons on the left
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    await backupService.exportData(context);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Data exported successfully'),
-                        ),
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.upload_file),
-                  label: const Text('Export Data'),
-                ),
-                const SizedBox(height: 12), // Space between buttons
-                ElevatedButton.icon(
-                  onPressed: () async {
-                    await backupService.importData();
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Data imported')),
-                      );
-                    }
-                  },
-                  icon: const Icon(Icons.download),
-                  label: const Text('Import Data'),
-                ),
-              ],
+            // Bottom Buttons Area
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.start, // Keeps buttons to the left
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await backupService.exportData(context);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Data exported successfully'),
+                          ),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text('Export Data'),
+                  ),
+
+                  const SizedBox(height: 12),
+
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await backupService.importData();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Data imported')),
+                        );
+                      }
+                    },
+                    icon: const Icon(Icons.download),
+                    label: const Text('Import Data'),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

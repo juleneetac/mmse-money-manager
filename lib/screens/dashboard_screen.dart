@@ -23,85 +23,89 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Month / Year selector
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  DateFormat.yMMMM().format(selectedMonth),
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+      // 1. Wrap the body in SafeArea
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Month / Year selector
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    DateFormat.yMMMM().format(selectedMonth),
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.calendar_month),
-                  onPressed: _openMonthYearPicker,
-                ),
-              ],
-            ),
+                  IconButton(
+                    icon: const Icon(Icons.calendar_month),
+                    onPressed: _openMonthYearPicker,
+                  ),
+                ],
+              ),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            // Monthly total
-            StreamBuilder<double>(
-              stream: db.watchTotalForMonth(selectedMonth),
-              builder: (context, snapshot) {
-                return _SummaryCard(
-                  title: 'Total expenses this month',
-                  value: snapshot.data ?? 0.0,
-                  color: Colors.red,
-                );
-              },
-            ),
-
-            const SizedBox(height: 24),
-
-            const Text(
-              'Expenses by category (selected month)',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-
-            const SizedBox(height: 12),
-
-            // Pie chart with category colors
-            SizedBox(
-              height: 220,
-              child: StreamBuilder<Map<Category, double>>(
-                stream: db.watchCategoryTotalsForMonth(
-                  startOfMonth,
-                  endOfMonth,
-                ),
+              // Monthly total
+              StreamBuilder<double>(
+                stream: db.watchTotalForMonth(selectedMonth),
                 builder: (context, snapshot) {
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                      child: Text('No expenses for this month'),
-                    );
-                  }
-
-                  return _CategoryPieChart(data: snapshot.data!);
+                  return _SummaryCard(
+                    title: 'Total expenses this month',
+                    value: snapshot.data ?? 0.0,
+                    color: Colors.red,
+                  );
                 },
               ),
-            ),
 
-            const SizedBox(height: 24),
+              const SizedBox(height: 24),
 
-            const Text(
-              'Monthly expenses (full year)',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+              const Text(
+                'Expenses by category (selected month)',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
 
-            const SizedBox(height: 12),
+              const SizedBox(height: 12),
 
-            Expanded(
-              child: _YearlyBarChart(db: db, year: selectedMonth.year),
-            ),
-          ],
+              // Pie chart
+              SizedBox(
+                height: 220,
+                child: StreamBuilder<Map<Category, double>>(
+                  stream: db.watchCategoryTotalsForMonth(
+                    startOfMonth,
+                    endOfMonth,
+                  ),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return const Center(
+                        child: Text('No expenses for this month'),
+                      );
+                    }
+                    return _CategoryPieChart(data: snapshot.data!);
+                  },
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              const Text(
+                'Monthly expenses (full year)',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+
+              const SizedBox(height: 12),
+
+              // 2. Expanded now respects the bottom SafeArea,
+              // so the chart labels won't be hidden.
+              Expanded(
+                child: _YearlyBarChart(db: db, year: selectedMonth.year),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -212,30 +216,66 @@ class _SummaryCard extends StatelessWidget {
   }
 }
 
-class _CategoryPieChart extends StatelessWidget {
-  // Map<Category, totalAmount>
+class _CategoryPieChart extends StatefulWidget {
   final Map<Category, double> data;
 
   const _CategoryPieChart({required this.data});
 
   @override
+  State<_CategoryPieChart> createState() => _CategoryPieChartState();
+}
+
+class _CategoryPieChartState extends State<_CategoryPieChart> {
+  // Keeps track of which section is currently clicked/hovered
+  int touchedIndex = -1;
+
+  @override
   Widget build(BuildContext context) {
+    final entries = widget.data.entries.toList();
+
     return PieChart(
       PieChartData(
-        centerSpaceRadius: 40,
-        sections: data.entries.map((e) {
+        pieTouchData: PieTouchData(
+          touchCallback: (FlTouchEvent event, pieTouchResponse) {
+            setState(() {
+              if (!event.isInterestedForInteractions ||
+                  pieTouchResponse == null ||
+                  pieTouchResponse.touchedSection == null) {
+                touchedIndex = -1;
+                return;
+              }
+              touchedIndex =
+                  pieTouchResponse.touchedSection!.touchedSectionIndex;
+            });
+          },
+        ),
+        centerSpaceRadius: 50,
+        sectionsSpace: 2,
+        sections: List.generate(entries.length, (i) {
+          final isTouched = i == touchedIndex;
+          final entry = entries[i];
+
+          // Dynamic styling based on touch
+          final fontSize = isTouched ? 16.0 : 11.0;
+          final radius = isTouched ? 80.0 : 70.0;
+          //final widgetSize = isTouched ? 55.0 : 40.0;
+
           return PieChartSectionData(
-            value: e.value,
-            title: e.key.name,
-            radius: 70,
-            color: Color(e.key.color),
-            titleStyle: const TextStyle(
-              color: Colors.white,
-              fontSize: 11,
+            color: Color(entry.key.color),
+            value: entry.value,
+            // Show name normally, or amount when clicked
+            title: isTouched
+                ? '${entry.value.toStringAsFixed(2)}€'
+                : entry.key.name,
+            radius: radius,
+            titleStyle: TextStyle(
+              fontSize: fontSize,
               fontWeight: FontWeight.bold,
+              color: Colors.white,
+              shadows: const [Shadow(color: Colors.black, blurRadius: 2)],
             ),
           );
-        }).toList(),
+        }),
       ),
     );
   }
